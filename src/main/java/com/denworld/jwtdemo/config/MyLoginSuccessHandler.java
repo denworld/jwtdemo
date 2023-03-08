@@ -1,11 +1,15 @@
 package com.denworld.jwtdemo.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.denworld.jwtdemo.entity.Token;
+import com.denworld.jwtdemo.entity.User;
+import com.denworld.jwtdemo.service.TokenService;
+import com.denworld.jwtdemo.utils.ResponseUtil;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.ServletException;
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -17,8 +21,15 @@ import java.io.IOException;
 
 @Component
 public class MyLoginSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
+
+    @Resource
+    private TokenService tokenService;
+
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-        System.out.println("login success");
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        //使用jwt生成Token
+        Token token = tokenService.saveToken(user);
+        ResponseUtil.responseJson(response, HttpStatus.OK.value(), token);
     }
 }

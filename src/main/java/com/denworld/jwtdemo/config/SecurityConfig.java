@@ -1,11 +1,12 @@
 package com.denworld.jwtdemo.config;
 
-import com.denworld.jwtdemo.service.impl.UserDetailsServiceImpl;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import javax.annotation.Resource;
 
@@ -17,9 +18,11 @@ import javax.annotation.Resource;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Resource
-    private UserDetailsServiceImpl UserDetailsService;
+    private UserDetailsService UserDetailsService;
     @Resource
     private MyLoginSuccessHandler myLoginSuccessHandler;
+    @Resource
+    private TokenFilter tokenFilter;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -34,6 +37,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .defaultSuccessUrl("/authHello")
                 .successHandler(myLoginSuccessHandler)
                 .and()
+                .addFilterBefore(tokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .csrf().disable();
     }
 

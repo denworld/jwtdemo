@@ -15,6 +15,9 @@ import java.util.Collection;
 public class User implements UserDetails {
     private String username;
     private String password;
+    private String tokenKey;
+    private Long loginTime;
+    private Long expireTime;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -40,4 +43,5 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
 }
