@@ -13,12 +13,17 @@ import java.util.Collection;
  * @since 2023/03/08 13:13
  */
 @Data
-@EqualsAndHashCode(callSuper=false)
+@EqualsAndHashCode(callSuper = false)
 @JsonIgnoreProperties(value = {"password"})
 public class LoginUser extends User implements UserDetails {
     private Long loginTime;
     private Long expireTime;
     private String tokenKey;
+    private boolean accountNonExpired;
+    private boolean accountNonLocked;
+    private boolean credentialsNonExpired;
+    private boolean enabled;
+    private Collection<? extends GrantedAuthority> authorities;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
