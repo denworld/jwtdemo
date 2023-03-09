@@ -1,7 +1,5 @@
 package com.denworld.jwtdemo.utils;
 
-import cn.hutool.json.JSON;
-import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 
 import javax.servlet.http.HttpServletResponse;
@@ -24,6 +22,5 @@ public class ResponseUtil {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return;
     }
 }

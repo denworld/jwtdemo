@@ -1,9 +1,8 @@
 package com.denworld.jwtdemo.config;
 
 import cn.hutool.core.util.StrUtil;
-import com.denworld.jwtdemo.entity.User;
+import com.denworld.jwtdemo.entity.LoginUser;
 import com.denworld.jwtdemo.service.TokenService;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -34,10 +33,10 @@ public class TokenFilter extends OncePerRequestFilter {
         String token = getToken(request);
         if (StrUtil.isNotBlank(token)) {
             //通过JWT解析请求数据中的Token，获取用户数据
-            User user = tokenService.getLoginUser(token);
-            if (user != null) {
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user,
-                        null, user.getAuthorities());
+            LoginUser loginUser = tokenService.getLoginUser(token);
+            if (loginUser != null) {
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(loginUser,
+                        null, loginUser.getAuthorities());
                 SecurityContextHolder.getContext()
                                      .setAuthentication(authentication);
             }else{
@@ -50,9 +49,6 @@ public class TokenFilter extends OncePerRequestFilter {
 
     /**
      * 根据参数或者header获取token
-     *
-     * @param request
-     * @return
      */
     public static String getToken(HttpServletRequest request) {
         String token = request.getParameter(TOKEN_KEY);

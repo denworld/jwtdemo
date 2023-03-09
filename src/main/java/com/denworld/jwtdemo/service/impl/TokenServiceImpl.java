@@ -2,8 +2,8 @@ package com.denworld.jwtdemo.service.impl;
 
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
+import com.denworld.jwtdemo.entity.LoginUser;
 import com.denworld.jwtdemo.entity.Token;
-import com.denworld.jwtdemo.entity.User;
 import com.denworld.jwtdemo.service.TokenService;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -31,29 +31,29 @@ public class TokenServiceImpl implements TokenService {
     private static final long expireSeconds = 3600*1000;
 
     @Resource
-    private RedisTemplate redisTemplate;
+    private RedisTemplate<String, Object> redisTemplate;
 
     @Override
-    public Token saveToken(User user) {
+    public Token saveToken(LoginUser loginUser) {
 
-        user.setTokenKey(UUID.randomUUID().toString());
+        loginUser.setTokenKey(UUID.randomUUID().toString());
         // 将用户信息存入redis
-        user.setLoginTime(System.currentTimeMillis());
-        user.setExpireTime(user.getLoginTime() + expireSeconds);
+        loginUser.setLoginTime(System.currentTimeMillis());
+        loginUser.setExpireTime(loginUser.getLoginTime() + expireSeconds);
         // 根据uuid将loginUser缓存
-        redisTemplate.boundValueOps(user.getTokenKey())
-                     .set(user, expireSeconds, TimeUnit.SECONDS);
+        redisTemplate.boundValueOps(loginUser.getTokenKey())
+                     .set(loginUser, expireSeconds, TimeUnit.SECONDS);
         // 使用jwt生成token
-        String jwtToken = createJWTToken(user);
-        return new Token(jwtToken, user.getLoginTime());
+        String jwtToken = createJWTToken(loginUser);
+        return new Token(jwtToken, loginUser.getLoginTime());
     }
 
     @Override
-    public User getLoginUser(String jwtToken) {
+    public LoginUser getLoginUser(String jwtToken) {
 
         String uuid = getUUIDFromJWT(jwtToken);
         if (uuid != null) {
-            return (User) redisTemplate.boundValueOps(uuid).get();
+            return (LoginUser) redisTemplate.boundValueOps(uuid).get();
         }
         return null;
     }
@@ -73,20 +73,19 @@ public class TokenServiceImpl implements TokenService {
         } catch (ExpiredJwtException e) {
             log.error("{}已过期", jwtToken);
         } catch (Exception e) {
-            log.error("{}", e);
+            log.error("{}",e.getMessage());
         }
         return null;
     }
 
-    private String createJWTToken(User user) {
+    private String createJWTToken(LoginUser loginUser) {
 
         Map<String, Object> claims = new HashMap<>();
-        claims.put(TOKEN_KEY, user.getTokenKey());
-        String jwtToken = Jwts.builder()
-                              .setClaims(claims)
-                              .signWith(SignatureAlgorithm.HS256, secretKey)
-                              .compact();
-        return jwtToken;
+        claims.put(TOKEN_KEY, loginUser.getTokenKey());
+        return Jwts.builder()
+                   .setClaims(claims)
+                   .signWith(SignatureAlgorithm.HS256, secretKey)
+                   .compact();
     }
 
 }

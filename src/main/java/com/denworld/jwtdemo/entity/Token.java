@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Token {
-    String jwtToken;
-
-    long loginTime;
+    private String jwtToken;
+    private long loginTime;
 }

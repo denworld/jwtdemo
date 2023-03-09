@@ -1,9 +1,8 @@
 package com.denworld.jwtdemo.service;
 
 import com.denworld.jwtdemo.entity.Token;
-import com.denworld.jwtdemo.entity.User;
+import com.denworld.jwtdemo.entity.LoginUser;
 
-import java.util.UUID;
 
 /**
  * @author ywang Email:denworld@gmail.com
@@ -11,8 +10,8 @@ import java.util.UUID;
  */
 public interface TokenService {
 
-    public Token saveToken(User user);
+    Token saveToken(LoginUser loginUser);
 
-    public User getLoginUser(String jwtToken);
+    LoginUser getLoginUser(String jwtToken);
 
 }

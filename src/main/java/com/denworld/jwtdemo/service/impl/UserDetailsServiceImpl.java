@@ -1,5 +1,7 @@
 package com.denworld.jwtdemo.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
+import com.denworld.jwtdemo.entity.LoginUser;
 import com.denworld.jwtdemo.entity.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -16,14 +18,14 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = null;
+        LoginUser loginUser = null;
         if ("admin".equals(username)) {
-            user = new User();
+            User user = new User();
             user.setUsername("admin");
             user.setPassword(new BCryptPasswordEncoder().encode("admin"));
-        } else {
-            user = null;
+            loginUser = new LoginUser();
+            BeanUtil.copyProperties(user, loginUser);
         }
-        return user;
+        return loginUser;
     }
 }
